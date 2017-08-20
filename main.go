@@ -31,9 +31,8 @@ func main() {
 			Usage: "aws region",
 		},
 		cli.StringSliceFlag{
-			Name:   "service",
-			Usage:  "list of services to restart",
-			Hidden: true,
+			Name:  "services",
+			Usage: "list of services to restart",
 		},
 	}
 	app.Before = prepare
@@ -41,7 +40,7 @@ func main() {
 
 	err := app.Run(os.Args)
 	if err != nil {
-		println(err)
+		println(err.Error())
 	}
 }
 
