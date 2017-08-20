@@ -3,6 +3,8 @@ package main
 import (
 	"os"
 
+	"log"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ecs"
@@ -65,6 +67,7 @@ func restartServices(c *cli.Context) error {
 		return nil
 	}
 
+	log.Print("Querying TaskDefinitions for services.")
 	tds, err := getTaskDefinitions(svc, services)
 	if err != nil {
 		return err
@@ -75,7 +78,12 @@ func restartServices(c *cli.Context) error {
 		if err != nil {
 			return err
 		}
-		updateService(svc, serviceName, newTaskDef)
+
+		log.Printf("Updating %s to %s", serviceName, td.TaskDefinitionArn)
+		err = updateService(svc, serviceName, newTaskDef)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
