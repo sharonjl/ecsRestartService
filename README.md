@@ -1,3 +1,4 @@
+```
 NAME:
    ecsRestartService - Simplifying ECS deployment and management
 
@@ -12,4 +13,5 @@ GLOBAL OPTIONS:
    --region value   aws region
    --help, -h       show help
    --version, -v    print the version
+```
 
