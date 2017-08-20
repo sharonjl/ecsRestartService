@@ -33,8 +33,8 @@ func main() {
 			Usage: "aws region",
 		},
 		cli.StringSliceFlag{
-			Name:  "services",
-			Usage: "list of services to restart",
+			Name:  "service",
+			Usage: "service to restart",
 		},
 	}
 	app.Before = prepare
