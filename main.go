@@ -79,7 +79,7 @@ func restartServices(c *cli.Context) error {
 			return err
 		}
 
-		log.Printf("Updating %s to %s", serviceName, aws.StringValue(td.TaskDefinitionArn))
+		log.Printf("Updating %s to %s", serviceName, aws.StringValue(newTaskDef.TaskDefinitionArn))
 		err = updateService(svc, serviceName, newTaskDef)
 		if err != nil {
 			return err
