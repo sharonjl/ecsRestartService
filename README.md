@@ -11,7 +11,7 @@ COMMANDS:
 GLOBAL OPTIONS:
    --cluster value   the ECS cluster on which the services reside
    --region value    aws region
-   --service value  list of services to restart
+   --service value   service to restart
    --help, -h        show help
    --version, -v     print the version
 ```
