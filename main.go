@@ -18,7 +18,7 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "ecsRestartService"
 	app.Usage = "Simplifying ECS deployment and management"
-	app.HelpName = "ecsRestartService"
+	app.UsageText = "ecsRestartService [global options] [service1 service2 ...]"
 	app.Description = ""
 	app.Version = ""
 	app.Flags = []cli.Flag{
