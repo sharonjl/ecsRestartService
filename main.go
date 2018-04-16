@@ -1,9 +1,8 @@
 package main
 
 import (
-	"os"
-
 	"log"
+	"os"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -33,8 +32,8 @@ func main() {
 			Usage: "aws region",
 		},
 		cli.StringSliceFlag{
-			Name:  "service",
-			Usage: "service to restart",
+			Name:  "services",
+			Usage: "services to restart",
 		},
 	}
 	app.Before = prepare
@@ -67,8 +66,15 @@ func restartServices(c *cli.Context) error {
 		return nil
 	}
 
+	cluster := c.String("cluster")
+	if len(cluster) == 0 {
+		println("No cluster defined")
+		cli.ShowAppHelp(c)
+		return nil
+	}
+
 	log.Print("Querying TaskDefinitions for services.")
-	tds, err := getTaskDefinitions(svc, services)
+	tds, err := getTaskDefinitions(svc, cluster, services)
 	if err != nil {
 		return err
 	}
@@ -80,7 +86,7 @@ func restartServices(c *cli.Context) error {
 		}
 
 		log.Printf("Updating %s to %s", serviceName, aws.StringValue(newTaskDef.TaskDefinitionArn))
-		err = updateService(svc, serviceName, newTaskDef)
+		err = updateService(svc, cluster, serviceName, newTaskDef)
 		if err != nil {
 			return err
 		}
@@ -88,8 +94,9 @@ func restartServices(c *cli.Context) error {
 	return nil
 }
 
-func getTaskDefinitions(svc *ecs.ECS, services []string) (map[string]*ecs.TaskDefinition, error) {
+func getTaskDefinitions(svc *ecs.ECS, cluster string, services []string) (map[string]*ecs.TaskDefinition, error) {
 	input := &ecs.DescribeServicesInput{
+		Cluster:  aws.String(cluster),
 		Services: aws.StringSlice(services),
 	}
 	m := make(map[string]*ecs.TaskDefinition)
@@ -98,6 +105,7 @@ func getTaskDefinitions(svc *ecs.ECS, services []string) (map[string]*ecs.TaskDe
 	if err != nil {
 		return nil, err
 	}
+
 	for _, s := range result.Services {
 		td, err := getTaskDefinition(svc, s.Deployments[0].TaskDefinition)
 		if err != nil {
@@ -137,8 +145,9 @@ func cloneTaskDefinition(svc *ecs.ECS, td *ecs.TaskDefinition) (*ecs.TaskDefinit
 	return result.TaskDefinition, nil
 }
 
-func updateService(svc *ecs.ECS, serviceName string, task *ecs.TaskDefinition) error {
+func updateService(svc *ecs.ECS, cluster string, serviceName string, task *ecs.TaskDefinition) error {
 	input := &ecs.UpdateServiceInput{
+		Cluster:        aws.String(cluster),
 		Service:        aws.String(serviceName),
 		TaskDefinition: task.TaskDefinitionArn,
 	}
